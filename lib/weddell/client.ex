@@ -142,7 +142,7 @@ defmodule Weddell.Client do
   @doc false
   @spec request_opts() :: Keyword.t()
   def request_opts(extra_opts \\ []) do
-    [metadata: auth_header(), content_type: "application/grpc"]
+    [metadata: auth_header(), codec: GRPC.Codec.Proto]
     |> Enum.concat(extra_opts)
   end
 
