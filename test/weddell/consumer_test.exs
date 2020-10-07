@@ -15,7 +15,7 @@ defmodule Weddell.ConsumerTest do
     use Weddell.Consumer
 
     def handle_messages(messages) do
-      {:ok, delay: Enum.map(messages, &({&1, 1}))}
+      {:ok, delay: Enum.map(messages, &{&1, 1})}
     end
   end
 
@@ -30,8 +30,9 @@ defmodule Weddell.ConsumerTest do
   end
 
   test "consumer acks messages",
-  %{subscription: subscription} do
+       %{subscription: subscription} do
     {:ok, _} = AckConsumer.start_link(subscription)
+
     WaitForIt.wait {:ok, []} == Weddell.pull(subscription) do
       assert true
     else
@@ -40,8 +41,9 @@ defmodule Weddell.ConsumerTest do
   end
 
   test "consumer delays messages",
-  %{subscription: subscription} do
+       %{subscription: subscription} do
     {:ok, _} = DelayConsumer.start_link(subscription)
+
     WaitForIt.wait {:ok, []} == Weddell.pull(subscription) do
       assert true
     else

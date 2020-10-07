@@ -2,9 +2,7 @@ defmodule WeddellTest do
   use Weddell.IntegrationCase
 
   alias GRPC.RPCError
-  alias Weddell.{Message,
-                 TopicDetails,
-                 SubscriptionDetails}
+  alias Weddell.{Message, TopicDetails, SubscriptionDetails}
 
   describe "Weddell.create_topic/1" do
     test "successfully create a topic" do
@@ -112,7 +110,7 @@ defmodule WeddellTest do
     end
 
     test "successfully list subscriptions for a topic",
-    %{topic: topic, subscription: subscription} do
+         %{topic: topic, subscription: subscription} do
       assert {:ok, [^subscription], _} = Weddell.topic_subscriptions(topic, max: 1)
     end
   end
@@ -156,15 +154,16 @@ defmodule WeddellTest do
     end
 
     test "pull a message with data and attributes",
-    %{subscription: subscription, message: message} do
+         %{subscription: subscription, message: message} do
       {data, attributes} = message
+
       assert {:ok, [%Message{data: ^data, attributes: ^attributes}]} =
-        Weddell.pull(subscription, max_messages: 1, return_immediately: false)
+               Weddell.pull(subscription, max_messages: 1, return_immediately: false)
     end
 
     test "fail to pull a message from an invalid subscription" do
       assert {:error, %RPCError{message: "Subscription does not exist", status: 5}} =
-        Weddell.pull("test-subscription-#{UUID.uuid4()}")
+               Weddell.pull("test-subscription-#{UUID.uuid4()}")
     end
   end
 
@@ -181,14 +180,14 @@ defmodule WeddellTest do
     end
 
     test "successfully acknowledge a message",
-    %{subscription: subscription, message: message} do
+         %{subscription: subscription, message: message} do
       assert :ok = Weddell.acknowledge(message, subscription)
       assert {:ok, []} = Weddell.pull(subscription, max_messages: 1, return_immediately: true)
     end
 
     test "fail to ack a message from an invalid subscription", %{message: message} do
       assert {:error, %RPCError{message: "Subscription does not exist", status: 5}} =
-        Weddell.acknowledge(message, "test-subscription-#{UUID.uuid4()}")
+               Weddell.acknowledge(message, "test-subscription-#{UUID.uuid4()}")
     end
   end
 end

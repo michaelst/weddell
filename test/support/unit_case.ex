@@ -1,13 +1,11 @@
 defmodule Weddell.UnitCase do
   use ExUnit.CaseTemplate
 
-  alias Weddell.{PublisherStubMock,
-                 SubscriberStubMock}
+  alias Weddell.{PublisherStubMock, SubscriberStubMock}
 
   using do
     quote do
-      alias Weddell.{PublisherStubMock,
-                     SubscriberStubMock}
+      alias Weddell.{PublisherStubMock, SubscriberStubMock}
     end
   end
 

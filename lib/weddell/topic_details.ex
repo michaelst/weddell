@@ -4,7 +4,7 @@ defmodule Weddell.TopicDetails do
   """
   alias Google.Pubsub.V1.Topic
 
-  @type t :: %__MODULE__{name: String.t, project: String.t}
+  @type t :: %__MODULE__{name: String.t(), project: String.t()}
   defstruct [:name, :project]
 
   @doc false
@@ -12,6 +12,7 @@ defmodule Weddell.TopicDetails do
     %{"project" => project, "name" => name} =
       ~r|projects/(?<project>[^/]*)/topics/(?<name>.*)|
       |> Regex.named_captures(topic)
+
     %__MODULE__{name: name, project: project}
   end
 end

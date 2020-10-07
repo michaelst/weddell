@@ -5,13 +5,10 @@ defmodule Weddell do
   use Application
 
   alias GRPC.RPCError
-  alias Weddell.{Message,
-                 Client,
-                 Client.Publisher,
-                 SubscriptionDetails}
+  alias Weddell.{Message, Client, Client.Publisher, SubscriptionDetails}
 
   @typedoc "An RPC error"
-  @type error :: {:error, RPCError.t}
+  @type error :: {:error, RPCError.t()}
 
   @doc """
   Start Weddell and connect to the Pub/Sub server.
@@ -26,7 +23,7 @@ defmodule Weddell do
   @doc """
   Return the client currently connected to Pub/Sub.
   """
-  @spec client(timeout :: integer()) :: Client.t
+  @spec client(timeout :: integer()) :: Client.t()
   def client(timeout \\ 5000) do
     GenServer.call(Weddell.Client, {:client}, timeout)
   end
@@ -38,7 +35,7 @@ defmodule Weddell do
       Weddell.create_topic("foo")
       #=> :ok
   """
-  @spec create_topic(topic_name :: String.t, timeout :: integer()) :: :ok | error
+  @spec create_topic(topic_name :: String.t(), timeout :: integer()) :: :ok | error
   def create_topic(name, timeout \\ 5000) do
     GenServer.call(Weddell.Client, {:create_topic, name}, timeout)
   end
@@ -50,7 +47,7 @@ defmodule Weddell do
       Weddell.delete_topic("foo")
       #=> :ok
   """
-  @spec delete_topic(topic_name :: String.t, timeout :: integer()) :: :ok | error
+  @spec delete_topic(topic_name :: String.t(), timeout :: integer()) :: :ok | error
   def delete_topic(name, timeout \\ 5000) do
     GenServer.call(Weddell.Client, {:delete_topic, name}, timeout)
   end
@@ -76,10 +73,10 @@ defmodule Weddell do
     * `:cursor` - List topics starting at a cursor returned by an earlier call.
       _(default: nil)_
   """
-  @spec topics(opts :: Client.list_options, timeout :: integer()) ::
-    {:ok, topic_names :: [String.t]} |
-    {:ok, topic_names :: [String.t], Client.cursor} |
-    error
+  @spec topics(opts :: Client.list_options(), timeout :: integer()) ::
+          {:ok, topic_names :: [String.t()]}
+          | {:ok, topic_names :: [String.t()], Client.cursor()}
+          | error
   def topics(opts \\ [], timeout \\ 5000) do
     GenServer.call(Weddell.Client, {:topics, opts}, timeout)
   end
@@ -104,11 +101,13 @@ defmodule Weddell do
       to the specified URL. For example, a Webhook endpoint might
       use "https://example.com/push". _(default: nil)_
   """
-  @spec create_subscription(subscription_name :: String.t,
-                            topic_name :: String.t,
-                            Client.subscription_options,
-                            timeout :: integer()) ::
-    :ok | error
+  @spec create_subscription(
+          subscription_name :: String.t(),
+          topic_name :: String.t(),
+          Client.subscription_options(),
+          timeout :: integer()
+        ) ::
+          :ok | error
   def create_subscription(name, topic, opts \\ [], timeout \\ 5000) do
     GenServer.call(Weddell.Client, {:create_subscription, name, topic, opts}, timeout)
   end
@@ -120,8 +119,8 @@ defmodule Weddell do
       Weddell.delete_subscription("foo")
       #=> :ok
   """
-  @spec delete_subscription(subscription_name :: String.t, timeout :: integer()) ::
-    :ok | error
+  @spec delete_subscription(subscription_name :: String.t(), timeout :: integer()) ::
+          :ok | error
   def delete_subscription(name, timeout \\ 5000) do
     GenServer.call(Weddell.Client, {:delete_subscription, name}, timeout)
   end
@@ -147,10 +146,10 @@ defmodule Weddell do
     * `:cursor` - List subscriptions starting at a cursor returned by an earlier call.
       _(default: nil)_
   """
-  @spec subscriptions(opts :: Client.list_options, timeout :: integer()) ::
-    {:ok, subscriptions :: [SubscriptionDetails.t]} |
-    {:ok, subscriptions :: [SubscriptionDetails.t], Client.cursor} |
-    error
+  @spec subscriptions(opts :: Client.list_options(), timeout :: integer()) ::
+          {:ok, subscriptions :: [SubscriptionDetails.t()]}
+          | {:ok, subscriptions :: [SubscriptionDetails.t()], Client.cursor()}
+          | error
   def subscriptions(opts \\ [], timeout \\ 5000) do
     GenServer.call(Weddell.Client, {:subscriptions, opts}, timeout)
   end
@@ -176,12 +175,14 @@ defmodule Weddell do
     * `:cursor` - List subscriptions starting at a cursor returned by an earlier call.
       _(default: nil)_
   """
-  @spec topic_subscriptions(topic :: String.t,
-                            opts :: Client.list_options,
-                            timeout :: integer()) ::
-    {:ok, subscriptions :: [String.t]} |
-    {:ok, subscriptions :: [String.t], Client.cursor} |
-    error
+  @spec topic_subscriptions(
+          topic :: String.t(),
+          opts :: Client.list_options(),
+          timeout :: integer()
+        ) ::
+          {:ok, subscriptions :: [String.t()]}
+          | {:ok, subscriptions :: [String.t()], Client.cursor()}
+          | error
   def topic_subscriptions(topic, opts \\ [], timeout \\ 5000) do
     GenServer.call(Weddell.Client, {:topic_subscriptions, topic, opts}, timeout)
   end
@@ -216,10 +217,12 @@ defmodule Weddell do
       |> Weddell.publish("foo-topic")
 
   """
-  @spec publish(Publisher.new_message | [Publisher.new_message],
-                topic_name :: String.t,
-                timeout :: integer()) ::
-    :ok | error
+  @spec publish(
+          Publisher.new_message() | [Publisher.new_message()],
+          topic_name :: String.t(),
+          timeout :: integer()
+        ) ::
+          :ok | error
   def publish(messages, topic, timeout \\ 5000) do
     GenServer.call(Weddell.Client, {:publish, messages, topic}, timeout)
   end
@@ -241,9 +244,8 @@ defmodule Weddell do
     * `:max_messages` - The maximum number of messages to be returned,
       it may be fewer. _(default: 10)_
   """
-  @spec pull(subscription_name :: String.t, Client.pull_options,
-             timeout :: integer()) ::
-    {:ok, messages :: [Message.t]} | error
+  @spec pull(subscription_name :: String.t(), Client.pull_options(), timeout :: integer()) ::
+          {:ok, messages :: [Message.t()]} | error
   def pull(subscription, opts \\ [], timeout \\ 5000) do
     GenServer.call(Weddell.Client, {:pull, subscription, opts}, timeout)
   end
@@ -257,10 +259,12 @@ defmodule Weddell do
       Weddell.acknowledge(messages, "foo-subscription")
       #=> :ok
   """
-  @spec acknowledge(messages :: [Message.t] |  Message.t,
-                    subscription_name :: String.t,
-                    timeout :: integer()) ::
-    :ok | error
+  @spec acknowledge(
+          messages :: [Message.t()] | Message.t(),
+          subscription_name :: String.t(),
+          timeout :: integer()
+        ) ::
+          :ok | error
   def acknowledge(messages, subscription, timeout \\ 5000) do
     GenServer.call(Weddell.Client, {:acknowledge, messages, subscription}, timeout)
   end

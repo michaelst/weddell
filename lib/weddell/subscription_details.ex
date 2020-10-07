@@ -6,15 +6,15 @@ defmodule Weddell.SubscriptionDetails do
   alias Weddell.Client.Util
 
   @type t :: %__MODULE__{
-    name: String.t,
-    project: String.t,
-    topic: String.t,
-    ack_deadline_seconds: pos_integer,
-    push_endpoint: String.t,
-    push_attributes: %{optional(String.t) => String.t}}
+          name: String.t(),
+          project: String.t(),
+          topic: String.t(),
+          ack_deadline_seconds: pos_integer,
+          push_endpoint: String.t(),
+          push_attributes: %{optional(String.t()) => String.t()}
+        }
 
-  defstruct [:name, :topic, :project, :ack_deadline_seconds,
-             :push_endpoint, :push_attributes]
+  defstruct [:name, :topic, :project, :ack_deadline_seconds, :push_endpoint, :push_attributes]
 
   @doc false
   def new(%Subscription{} = sub) do
@@ -22,9 +22,13 @@ defmodule Weddell.SubscriptionDetails do
     name = Util.parse_full_subscription(sub.name)
     topic = Util.parse_full_topic(sub.topic)
 
-    %__MODULE__{name: name, topic: topic, project: project,
+    %__MODULE__{
+      name: name,
+      topic: topic,
+      project: project,
       ack_deadline_seconds: sub.ack_deadline_seconds,
       push_endpoint: sub.push_config.push_endpoint,
-      push_attributes: sub.push_config.attributes}
+      push_attributes: sub.push_config.attributes
+    }
   end
 end
